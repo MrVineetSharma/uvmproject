@@ -1,5 +1,6 @@
-                       // uvm tb for half adder
-                        //      test1 
+                        // uvm tb for half adder
+                        //      test2
+                        // testcase2  when rst ==0 and a == 1 ,sum == ~b ,cout ==b;
 `include"uvm_macros.svh"
 import uvm_pkg::*;
 
@@ -56,16 +57,16 @@ endfunction
 endclass
 
 //sequence
-class sequence1 extends uvm_sequence#(ha_seq_item);
+class sequence2 extends uvm_sequence#(ha_seq_item);
 ha_seq_item st;
- `uvm_object_utils(sequence1)
+  `uvm_object_utils(sequence2)
 
-function new(string path = "sequence1");
+  function new(string path = "sequence2");
 super.new(path);
 endfunction
 
 virtual task pre_body();
- `uvm_info(get_type_name(),$sformatf( "(sequence1) i am in pre_body at time %0t",$time()),UVM_NONE);
+  `uvm_info(get_type_name(),$sformatf( "(sequence2) i am in pre_body at time %0t",$time()),UVM_NONE);
 endtask
 
 virtual task body();
@@ -73,15 +74,15 @@ st = ha_seq_item::type_id::create("st");
   repeat(10)
   begin
  wait_for_grant();
- st.randomize(st) with{st.rst ==0; st.a ==0;};
+    st.randomize(st) with{st.rst ==0; st.a ==1;};
  send_request(st);
  wait_for_item_done();
-    `uvm_info(get_type_name(),$sformatf("(sequence1) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
+    `uvm_info(get_type_name(),$sformatf("(sequence2) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
 end
 endtask
 
 virtual task post_body();
-`uvm_info(get_type_name(),$sformatf( "(sequence1) i am in post_body at time %0t",$time()),UVM_NONE);
+  `uvm_info(get_type_name(),$sformatf( "(sequence2) i am in post_body at time %0t",$time()),UVM_NONE);
 endtask
 
 endclass
@@ -230,7 +231,7 @@ st = t;
   `uvm_info(get_type_name(),$sformatf("(scoreboard)value of a=%0d,b=%0d,rst=%0d,sum=%0d,cout=%0d at time=%0t",t.a,t.b,t.rst,t.sum,t.cout,$time()),UVM_NONE);
 
   
-  if((st.sum == st.b) && (st.cout == 0))
+  if((st.sum == ~st.b) && (st.cout == st.b))
       `uvm_info(get_type_name(),$sformatf("test pass with rst=%0d at time %0t",st.rst,$time()),UVM_NONE)
    else if ((st.rst==1) && (st.cout ==0) && (st.sum ==0))
      `uvm_info(get_type_name(),$sformatf("test pass with rst = %0d at time %0t",st.rst,$time()),UVM_NONE)     
@@ -381,29 +382,29 @@ endtask
 endclass
 
 //test1
-class  test1 extends base_test;
-sequence1 seq1;
-  `uvm_component_utils(test1);
+class  test2 extends base_test;
+sequence2 seq2;
+  `uvm_component_utils(test2);
 
-  function new(string path = "test1" ,uvm_component parent = null);
+  function new(string path = "test2" ,uvm_component parent = null);
 super.new(path,parent);
 endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-  `uvm_info(get_type_name(),"i am in  build phase of test1",UVM_NONE);
-  seq1 = sequence1::type_id::create("seq1");
+  `uvm_info(get_type_name(),"i am in  build phase of test2",UVM_NONE);
+  seq2 = sequence2::type_id::create("seq2");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-  `uvm_info(get_type_name(),"i am in  connect phase of test1",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  connect phase of test2",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
-  `uvm_info(get_type_name(),"i am in  run phase of test1",UVM_NONE);
-seq1.start(en.ag.seqr);
+  `uvm_info(get_type_name(),"i am in  run phase of test2",UVM_NONE);
+seq2.start(en.ag.seqr);
  #5;
 phase.drop_objection(this);
 endtask
@@ -448,7 +449,7 @@ ha dut(.a(aif.a),
 initial
 begin
 uvm_config_db#(virtual intf)::set(null,"uvm_top","vif",aif);
-  run_test("test1");
+  run_test("test2");
 end
 
 initial begin
