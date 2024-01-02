@@ -1,0 +1,42 @@
+//          project list       //
+Half Adder
+Full Adder
+Half Subtractor
+Full Subtractor
+Ripple Carry Adder
+4-bit Adder Subtractor
+Carry Look Ahead Adder
+Binary to Gray Code Converter
+Gray to Binary Code Converter
+Multiplexer
+2:1 Multiplexer
+4:1 Multiplexer
+4:1 MUX using 2:1 MUX
+3:1 Multiplexer
+Demultiplexer
+1:2 Demultiplexer
+1:4 Demultiplexer
+1:4 DEMUX using 1:2 DEMUX
+Encoder
+Binary Encoder
+Priority Encoder
+Decoder
+Comparator
+Array Multiplier
+Booth’s Multiplier
+Wallace Tree Multiplier
+DFF with Asynchronous Reset
+DFF with Synchronous Reset
+SR Flip Flop
+JK Flip Flop
+T Flip Flop
+Universal Shift Register
+Linear feedback shift register (LFSR)
+Asynchronous Counter
+Synchronous Counter
+Mealy Sequence Detector
+Moore Sequence Detector
+Synchronous FIFO
+Asynchronous FIFO
+Memory 
+
