@@ -1,0 +1,24 @@
+// test case for HA
+//..............
+test1
+when rst ==0 ,and a ==0 ,sum == b,cout ==0;
+
+//..................
+test2
+when rst ==0 and a == 1 ,sum == ~b ,cout ==b;
+
+//................
+test3
+when rst ==0 and b ==0 ,sum ==a ,cout == 0;
+
+//............................
+test4
+when rst ==0 ,b ==1 ,sum ==~a ,cout == a;
+
+//..............................
+test5
+when rst ==1, sum == 0,cout ==0; for all a,b;
+
+//..................................
+
+
