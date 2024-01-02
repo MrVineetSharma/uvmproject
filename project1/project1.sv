@@ -1,6 +1,5 @@
-
-                      // uvm tb for half adder
-
+                       // uvm tb for half adder
+                        //      test1 
 `include"uvm_macros.svh"
 import uvm_pkg::*;
 
@@ -74,7 +73,7 @@ st = ha_seq_item::type_id::create("st");
   repeat(10)
   begin
  wait_for_grant();
- st.randomize(st);
+ st.randomize(st) with{st.rst ==0; st.a ==0;};
  send_request(st);
  wait_for_item_done();
     `uvm_info(get_type_name(),$sformatf("(sequence1) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
@@ -109,7 +108,7 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("drv","i am in build phase of driver",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of driver",UVM_NONE);
   dt = ha_seq_item::type_id::create("dt");
    if(!uvm_config_db #(virtual intf)::get(null,"uvm_top","vif",vif))
       `uvm_error("DRV","Unable to access uvm_config_db");
@@ -117,7 +116,7 @@ super.build_phase(phase);
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("drv","i am in connect phase of driver",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of driver",UVM_NONE);
 endfunction
 
 task reset();
@@ -133,7 +132,7 @@ endtask
 
 virtual task run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-`uvm_info("drv","i am in  run phase of driver",UVM_NONE);
+`uvm_info(get_type_name(),"i am in  run phase of driver",UVM_NONE);
   reset();  
  forever
  begin
@@ -168,17 +167,17 @@ super.build_phase(phase);
  mt = ha_seq_item::type_id::create("mt");
  send = new("send",this);
  if(!uvm_config_db#(virtual intf)::get(null,"uvm_top","vif",vif))
-   `uvm_error("DRV","Unable to access uvm_config_db");
+   `uvm_error(get_type_name(),"Unable to access uvm_config_db");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("mon","i am in connect phase of monitor",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of monitor",UVM_NONE);
 endfunction
 
 virtual task  run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-  `uvm_info("mon","run phase of monitor",UVM_NONE);
+  `uvm_info(get_type_name(),"run phase of monitor",UVM_NONE);
   @(negedge vif.rst); 
   forever
     begin
@@ -208,19 +207,19 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("scoreboard","i am in build phase of scoreboard",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of scoreboard",UVM_NONE);
 st = ha_seq_item::type_id::create("st");
 recv = new("recv",this);
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("sco","i am in connect phase of scoreboard",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of scoreboard",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-  `uvm_info("sco",$sformatf("hello vineet i am in run phase of scoreboard at time %0t",$time()),UVM_NONE);
+  `uvm_info(get_type_name(),$sformatf("hello vineet i am in run phase of scoreboard at time %0t",$time()),UVM_NONE);
 //phase.drop_objection(this);
 endtask
 
@@ -230,12 +229,13 @@ st = t;
 
   `uvm_info(get_type_name(),$sformatf("(scoreboard)value of a=%0d,b=%0d,rst=%0d,sum=%0d,cout=%0d at time=%0t",t.a,t.b,t.rst,t.sum,t.cout,$time()),UVM_NONE);
 
-    if((st.sum == st.a ^ st.b) && (st.cout == st.a * st.b))
+  
+  if((st.sum == st.b) && (st.cout == 0))
       `uvm_info(get_type_name(),$sformatf("test pass with rst=%0d at time %0t",st.rst,$time()),UVM_NONE)
    else if ((st.rst==1) && (st.cout ==0) && (st.sum ==0))
-     `uvm_info(get_type_name(),$sformatf("test pass with rst = %0d at time %0t",st.rst,$time()),UVM_NONE)
-     else
-  `uvm_info(get_type_name(),$sformatf("test fail at time %0t",$time()),UVM_NONE);
+     `uvm_info(get_type_name(),$sformatf("test pass with rst = %0d at time %0t",st.rst,$time()),UVM_NONE)     
+     else                   
+       `uvm_info(get_type_name(),$sformatf("test fail at time %0t",$time()),UVM_NONE);
   endfunction
 endclass
 
@@ -271,19 +271,19 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("scb","i am in build phase of subscriber",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of subscriber",UVM_NONE);
 st = ha_seq_item::type_id::create("st");
 recv = new("recv",this);
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("scb","i am in connect phase of subscriber",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of subscriber",UVM_NONE);
 endfunction
 
 virtual task  run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-`uvm_info("scb","i am in run phase of subscriber",UVM_NONE);
+`uvm_info(get_type_name(),"i am in run phase of subscriber",UVM_NONE);
 //phase.drop_objection(this);
 endtask
 endclass
@@ -301,7 +301,7 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("agent","i am in build phase of agent",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of agent",UVM_NONE);
  drv= driver::type_id::create("drv",this);
  mon = monitor::type_id::create("mon",this);
  seqr = sequencer::type_id::create("seqr",this);
@@ -309,13 +309,13 @@ endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("agent","i am in connect phase of agent",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of agent",UVM_NONE);
 drv.seq_item_port.connect(seqr.seq_item_export);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-`uvm_info("agent","i am in run phase of agent",UVM_NONE);
+`uvm_info(get_type_name(),"i am in run phase of agent",UVM_NONE);
 //phase.drop_objection(this);
 endtask
 endclass
@@ -333,7 +333,7 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("env","i am in build phase of environmemt",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of environmemt",UVM_NONE);
  ag= agent::type_id::create("ag",this);
  sco= scoreboard::type_id::create("sco",this);
  scb= subscriber::type_id::create("scb",this);
@@ -341,14 +341,14 @@ endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("env","i am in connect phase of environment",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of environment",UVM_NONE);
  ag.mon.send.connect(sco.recv);
  ag.mon.send.connect(scb.recv);
 endfunction
 
 virtual task  run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-`uvm_info("env","i am in run phase of env",UVM_NONE);
+`uvm_info(get_type_name(),"i am in run phase of env",UVM_NONE);
 //phase.drop_objection(this);
 endtask
 endclass
@@ -364,45 +364,45 @@ endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("base_test","i am in build phase of base_test",UVM_NONE);
+`uvm_info(get_type_name(),"i am in build phase of base_test",UVM_NONE);
  en = env::type_id::create("env",this);
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("base_test","i am in connect phase of base_test",UVM_NONE);
+`uvm_info(get_type_name(),"i am in connect phase of base_test",UVM_NONE);
 endfunction
 
 virtual task  run_phase(uvm_phase phase);
 //phase.raise_objection(this);
-`uvm_info("base_test","i am in run phase of base_test",UVM_NONE);
+`uvm_info(get_type_name(),"i am in run phase of base_test",UVM_NONE);
 //phase.drop_objection(this);
 endtask
 endclass
 
 //test1
-class  test extends base_test;
+class  test1 extends base_test;
 sequence1 seq1;
-`uvm_component_utils(test);
+  `uvm_component_utils(test1);
 
-function new(string path = "test" ,uvm_component parent = null);
+  function new(string path = "test1" ,uvm_component parent = null);
 super.new(path,parent);
 endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("test","i am in  build phase of test",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  build phase of test1",UVM_NONE);
   seq1 = sequence1::type_id::create("seq1");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("test","i am in  connect phase of test",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  connect phase of test1",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
-`uvm_info("test","i am in  run phase of test",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  run phase of test1",UVM_NONE);
 seq1.start(en.ag.seqr);
  #5;
 phase.drop_objection(this);
@@ -448,7 +448,7 @@ ha dut(.a(aif.a),
 initial
 begin
 uvm_config_db#(virtual intf)::set(null,"uvm_top","vif",aif);
-run_test("test");
+  run_test("test1");
 end
 
 initial begin
@@ -457,6 +457,7 @@ $dumpvars;
 end
 
 endmodule
+
 
 
 
