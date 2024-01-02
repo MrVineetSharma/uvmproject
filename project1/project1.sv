@@ -1,5 +1,7 @@
-                        // uvm tb for half adder
-                        //      test4  when rst ==0 ,b ==1 ,sum ==~a ,cout == a;
+                     // uvm tb for half adder
+                     // test5   when rst ==1, sum == 0,cout ==0; for all a,b;
+
+   
 `include"uvm_macros.svh"
 import uvm_pkg::*;
 
@@ -73,7 +75,7 @@ st = ha_seq_item::type_id::create("st");
   repeat(10)
   begin
  wait_for_grant();
-    st.randomize(st) with{st.rst ==0; st.b ==1;};
+    st.randomize(st) with{st.rst ==1; };
  send_request(st);
  wait_for_item_done();
     `uvm_info(get_type_name(),$sformatf("(ha_sequence) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
@@ -381,28 +383,28 @@ endtask
 endclass
 
 //test1
-class  test4 extends base_test;
+class  test5 extends base_test;
 ha_sequence seq;
-  `uvm_component_utils(test4);
+  `uvm_component_utils(test5);
 
-  function new(string path = "test4" ,uvm_component parent = null);
+  function new(string path = "test5" ,uvm_component parent = null);
 super.new(path,parent);
 endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-  `uvm_info(get_type_name(),"i am in  build phase of test4",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  build phase of test5",UVM_NONE);
   seq = ha_sequence::type_id::create("seq");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-  `uvm_info(get_type_name(),"i am in  connect phase of test4",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  connect phase of test5",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
-  `uvm_info(get_type_name(),"i am in  run phase of test4",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  run phase of test5",UVM_NONE);
 seq.start(en.ag.seqr);
  #5;
 phase.drop_objection(this);
@@ -448,7 +450,7 @@ ha dut(.a(aif.a),
 initial
 begin
 uvm_config_db#(virtual intf)::set(null,"uvm_top","vif",aif);
-  run_test("test4");
+  run_test("test5");
 end
 
 initial begin
