@@ -381,28 +381,28 @@ endtask
 endclass
 
 //test1
-class  test1 extends base_test;
+class  test extends base_test;
 sequence1 seq1;
-`uvm_component_utils(test1);
+`uvm_component_utils(test);
 
-function new(string path = "test1" ,uvm_component parent = null);
+function new(string path = "test" ,uvm_component parent = null);
 super.new(path,parent);
 endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-`uvm_info("test1","i am in  build phase of test1",UVM_NONE);
+`uvm_info("test","i am in  build phase of test",UVM_NONE);
   seq1 = sequence1::type_id::create("seq1");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-`uvm_info("test1","i am in  connect phase of test1",UVM_NONE);
+`uvm_info("test","i am in  connect phase of test",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
-`uvm_info("test1","i am in  run phase of test1",UVM_NONE);
+`uvm_info("test","i am in  run phase of test",UVM_NONE);
 seq1.start(en.ag.seqr);
  #5;
 phase.drop_objection(this);
@@ -448,7 +448,7 @@ ha dut(.a(aif.a),
 initial
 begin
 uvm_config_db#(virtual intf)::set(null,"uvm_top","vif",aif);
-run_test("test1");
+run_test("test");
 end
 
 initial begin
