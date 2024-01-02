@@ -38,16 +38,16 @@ endinterface
 class ha_seq_item extends uvm_sequence;
 rand logic a;
 rand logic b;
-//rand logic rst;
-logic [5:0]sum;
-logic  [5:0]cout;
+rand logic rst;
+logic sum;
+logic cout;
 
 `uvm_object_utils_begin(ha_seq_item)
   `uvm_field_int(a,UVM_DEFAULT);
   `uvm_field_int(b,UVM_DEFAULT);
   `uvm_field_int(sum,UVM_DEFAULT);
   `uvm_field_int(cout,UVM_DEFAULT);
- //`uvm_field_int(rst,UVM_DEFAULT);
+ `uvm_field_int(rst,UVM_DEFAULT);
  `uvm_object_utils_end
 
 function new(string path = "ha_seq_item");
@@ -71,13 +71,13 @@ endtask
 
 virtual task body();
 st = ha_seq_item::type_id::create("st");
-  repeat(20)
+  repeat(10)
   begin
  wait_for_grant();
  st.randomize(st);
  send_request(st);
  wait_for_item_done();
-`uvm_info(get_type_name(),$sformatf("(sequence1) a=%0d,b=%0d at time %0t",st.a,st.b,$time()),UVM_NONE);
+    `uvm_info(get_type_name(),$sformatf("(sequence1) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
 end
 endtask
 
@@ -140,9 +140,9 @@ virtual task run_phase(uvm_phase phase);
 seq_item_port.get_next_item(dt);
 vif.a <= dt.a;
 vif.b <= dt.b;
-//vif.rst <= dt.rst;
+vif.rst <= dt.rst;
 seq_item_port.item_done(dt);
-`uvm_info(get_type_name(),$sformatf("(driver) value of a=%0d,b=%0d at time=%0t",dt.a,dt.b,$time()),UVM_NONE);
+   `uvm_info(get_type_name(),$sformatf("(driver) value of a=%0d,b=%0d,rst=%0d at time=%0t",dt.a,dt.b,dt.rst,$time()),UVM_NONE);
  @(posedge vif.clk);
  @(posedge vif.clk);
 
@@ -187,9 +187,9 @@ virtual task  run_phase(uvm_phase phase);
   mt.b = vif.b;
   mt.sum = vif.sum;
   mt.cout = vif.cout;
-//mt.rst = vif.rst;
+  mt.rst = vif.rst;
 
- `uvm_info(get_type_name(),$sformatf("(monitor)value of a=%0d,b=%0d,sum=%0d,cout=%0d at time=%0t",mt.a,mt.b,mt.sum,mt.cout,$time()),UVM_NONE);
+      `uvm_info(get_type_name(),$sformatf("(monitor)value of a=%0d,b=%0d,rst =%0d,sum=%0d,cout=%0d at time=%0t",mt.a,mt.b,mt.rst,mt.sum,mt.cout,$time()),UVM_NONE);
 send.write(mt);
 //phase.drop_objection(this);
 end
@@ -228,11 +228,13 @@ virtual function void  write(ha_seq_item t);
 st = t;
  //`uvm_info("sco","i am in scoreboard write function",UVM_NONE);
 
-`uvm_info(get_type_name(),$sformatf("(scoreboard)value of a=%0d,b=%0d,sum=%0d,cout=%0d at time=%0t",t.a,t.b,t.sum,t.cout,$time()),UVM_NONE);
+  `uvm_info(get_type_name(),$sformatf("(scoreboard)value of a=%0d,b=%0d,rst=%0d,sum=%0d,cout=%0d at time=%0t",t.a,t.b,t.rst,t.sum,t.cout,$time()),UVM_NONE);
 
- unique if((st.sum == st.a ^ st.b) && (st.cout == st.a * st.b))
-    `uvm_info(get_type_name(),$sformatf("test pass at time %0t",$time()),UVM_NONE)
-   else 
+    if((st.sum == st.a ^ st.b) && (st.cout == st.a * st.b))
+      `uvm_info(get_type_name(),$sformatf("test pass with rst=%0d at time %0t",st.rst,$time()),UVM_NONE)
+   else if ((st.rst==1) && (st.cout ==0) && (st.sum ==0))
+     `uvm_info(get_type_name(),$sformatf("test pass with rst = %0d at time %0t",st.rst,$time()),UVM_NONE)
+     else
   `uvm_info(get_type_name(),$sformatf("test fail at time %0t",$time()),UVM_NONE);
   endfunction
 endclass
@@ -249,12 +251,14 @@ cg = new();
 endfunction
 
 covergroup cg;
-//option.per_instance =1;
+option.per_instance =1;
 option.name = "vineet";
 a:coverpoint st.a;
 b:coverpoint st.b;
+rst:coverpoint st.rst;
 sum:coverpoint st.sum;
 cout:coverpoint st.cout;
+  
 endgroup
 
 virtual function void write(ha_seq_item t);
@@ -453,5 +457,6 @@ $dumpvars;
 end
 
 endmodule
+
 
 
