@@ -1,5 +1,5 @@
                         // uvm tb for half adder
-               //test3 when rst ==0 and b ==0 ,sum ==a ,cout == 0;                        
+                        //      test4  when rst ==0 ,b ==1 ,sum ==~a ,cout == a;
 `include"uvm_macros.svh"
 import uvm_pkg::*;
 
@@ -73,7 +73,7 @@ st = ha_seq_item::type_id::create("st");
   repeat(10)
   begin
  wait_for_grant();
-    st.randomize(st) with{st.rst ==0; st.b ==0;};
+    st.randomize(st) with{st.rst ==0; st.b ==1;};
  send_request(st);
  wait_for_item_done();
     `uvm_info(get_type_name(),$sformatf("(ha_sequence) a=%0d,b=%0d,rst=%0d at time %0t",st.a,st.b,st.rst,$time()),UVM_NONE);
@@ -230,7 +230,7 @@ st = t;
   `uvm_info(get_type_name(),$sformatf("(scoreboard)value of a=%0d,b=%0d,rst=%0d,sum=%0d,cout=%0d at time=%0t",t.a,t.b,t.rst,t.sum,t.cout,$time()),UVM_NONE);
 
   
-  if((st.sum == st.a) && (st.cout == 0))
+  if((st.sum == ~st.a) && (st.cout == st.a))
       `uvm_info(get_type_name(),$sformatf("test pass with rst=%0d at time %0t",st.rst,$time()),UVM_NONE)
    else if ((st.rst==1) && (st.cout ==0) && (st.sum ==0))
      `uvm_info(get_type_name(),$sformatf("test pass with rst = %0d at time %0t",st.rst,$time()),UVM_NONE)     
@@ -381,28 +381,28 @@ endtask
 endclass
 
 //test1
-class  test3 extends base_test;
+class  test4 extends base_test;
 ha_sequence seq;
-  `uvm_component_utils(test3);
+  `uvm_component_utils(test4);
 
-  function new(string path = "test3" ,uvm_component parent = null);
+  function new(string path = "test4" ,uvm_component parent = null);
 super.new(path,parent);
 endfunction
 
 virtual function void build_phase(uvm_phase phase);
 super.build_phase(phase);
-  `uvm_info(get_type_name(),"i am in  build phase of test3",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  build phase of test4",UVM_NONE);
   seq = ha_sequence::type_id::create("seq");
 endfunction
 
 virtual function void connect_phase(uvm_phase phase);
 super.connect_phase(phase);
-  `uvm_info(get_type_name(),"i am in  connect phase of test3",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  connect phase of test4",UVM_NONE);
 endfunction
 
 virtual task run_phase(uvm_phase phase);
 phase.raise_objection(this);
-  `uvm_info(get_type_name(),"i am in  run phase of test3",UVM_NONE);
+  `uvm_info(get_type_name(),"i am in  run phase of test4",UVM_NONE);
 seq.start(en.ag.seqr);
  #5;
 phase.drop_objection(this);
@@ -448,7 +448,7 @@ ha dut(.a(aif.a),
 initial
 begin
 uvm_config_db#(virtual intf)::set(null,"uvm_top","vif",aif);
-  run_test("test3");
+  run_test("test4");
 end
 
 initial begin
